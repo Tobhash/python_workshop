@@ -1,0 +1,9 @@
+# All "test_locale" files, "test_locale" folders, and files and folders in any "test_locale" folder
+# test_locale
+
+
+# All files with the test_locale.py
+test_locale.py
+
+# all folders and files in the folders
+/__pycache__
