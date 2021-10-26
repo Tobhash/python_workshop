@@ -1,6 +1,5 @@
 ## About
-Hello. I'm glad to welcome you in a basic Python3 project's repository.
-I will publish here my sample projects created over the years. Some of them were finished quite time ago but never published and some needed a little brush up.
+Hello. I'm glad to welcome You in __Python WORKSHOP__ repository. In this repository my recent and old python projects are stored. Some of them still needs a little brush up but feel free to browse whatever You want. :eyes:
 
 ## Project description
 __Fibonacci Sequence__ _[01_fib]_ - very easy sample how to programm the sequence of the great Fibonacci. 
