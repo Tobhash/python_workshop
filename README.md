@@ -13,6 +13,8 @@ has specific set of rules that defined when cell can change state. The automaton
 :bomb:__Chaos Game__ _[04_cha] - :exclamation:WORK STILL IN PROGRESS :exclamation:
 
 :evergreen_tree:__Forest Fire__ _[05_for] - :exclamation: WORK STILL IN PROGRESS :exclamation:
+
+:running:__Fast Keys__ _[06_fas] - :exclamation: WORK STILL IN PROGRESS :exclamation:
 	
 ## Technologies
 Just Python3 (with use of default package libraries)
