@@ -1,0 +1,8 @@
+# all workspace files
+.workspace
+
+# all pycache files
+__pycache__
+
+#all test files
+**/test*.py

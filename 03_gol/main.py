@@ -1,10 +1,25 @@
 from tkinter import *
 from Cell import Cell
 from time import *
+import argparse
 
-WIDTH = 80
+# Parse arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('--size',
+                    default=[50, 50],
+                    dest='size',
+                    help='Define the matrix size. Range: 10-300',
+                    type=int,
+                    nargs=2
+                    )
+args = parser.parse_args()
+if args.size[0] < 10 or args.size[1] < 10:
+    print("WARNING! Minimal size: 10x10, maximal: 300x300.")
+    quit()
+
+WIDTH = args.size[0]
+HEIGHT = args.size[1]
 W_index = WIDTH - 1
-HEIGHT = 80
 H_index = HEIGHT - 1
 NEXT_STEP_TIME = 0.0
 NEXT_DRAW_TIME = 0.0
@@ -12,6 +27,8 @@ DELAY_IN_SECONDS = 0.5
 IS_ON = False
 cell_grid = []
 cell_size = 10
+
+
 
 def start():
     global IS_ON
