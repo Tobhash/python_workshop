@@ -1,5 +1,6 @@
 # all workspace files
-.workspace
+*.workspace
+*.code-workspace
 
 # all pycache files
 __pycache__

@@ -3,7 +3,7 @@ from Cell import Cell
 from time import *
 import argparse
 
-# Parse arguments
+# Parse arguments and set Matrix size
 parser = argparse.ArgumentParser()
 parser.add_argument('--size',
                     default=[50, 50],
@@ -17,27 +17,28 @@ if args.size[0] < 10 or args.size[1] < 10:
     print("WARNING! Minimal size: 10x10, maximal: 300x300.")
     quit()
 
-WIDTH = args.size[0]
-HEIGHT = args.size[1]
-W_index = WIDTH - 1
-H_index = HEIGHT - 1
-NEXT_STEP_TIME = 0.0
-NEXT_DRAW_TIME = 0.0
-DELAY_IN_SECONDS = 0.5
-IS_ON = False
+WIDTH = args.size[0]    #default 50
+HEIGHT = args.size[1]   #default 50
+WIDTH_MAX_INDEX = WIDTH - 1
+HEIGHT_MAX_INDEX = HEIGHT - 1
+CELL_SIZE = 10
+DELAY_IN_SECONDS = 0.5  #Controls animation speed
+next_step_time = 0.0
+next_draw_time = 0.0
+is_on = False       #controls iteratons
+is_running = True   #controls main loop of the program
 cell_grid = []
-cell_size = 10
 
 
 
 def start():
-    global IS_ON
-    IS_ON = True
-    NEXT_STEP_TIME = time()
+    global is_on, next_step_time
+    is_on = True
+    next_step_time = time()
 
 def stop():
-    global IS_ON
-    IS_ON = False
+    global is_on
+    is_on = False
 
 def reset():
     stop()
@@ -46,92 +47,75 @@ def reset():
             cell_grid[i][j].changeState(False)
             cell_grid[i][j].next_state = False
 
-
-okno = Tk()
-#okno.geometry("600x600")
-okno.title("John Conway's Game of Life")
-
-frame1 = Frame(okno)
-frame1.grid(row=0, column=0)
-frame2 = Frame(okno)
-frame2.grid(row=0,column=1)
-
-c = Canvas(frame1, width = WIDTH*cell_size, height=HEIGHT*cell_size)
-c.pack()
-
-btn_start = Button(frame2, text="START", width=8, bg = "green", fg = "white", command=start)
-btn_start.pack(pady = 5, padx = 5)
-btn_stop = Button(frame2, text="STOP", width=8, bg = "red", fg = "white", command=stop)
-btn_stop.pack(pady = 5, padx = 5)
-btn_reset = Button(frame2, text="RESET", width=8, bg = "brown", fg = "white", command=reset)
-btn_reset.pack(pady = 5, padx = 5)
-
 def create_grid():
     for i in range(0, HEIGHT):
         l = []
 
         for j in range(0, WIDTH):
-            l.append(Cell(c, j, i, cell_size,0))
+            l.append(Cell(c, j, i, CELL_SIZE,0))
 
         cell_grid.append(l)
-        print(j)
+        #print(j)
 
-def count_neighbours(row, col):
-    #PRAWY
+def count_neighbors(row, col):
+    # Specify neighbors and count how many of them are alive(active).
+    # Note that the plane is used here as a sphere:
+    # The ceiling connects with the floor
+    # and the right side connects with the left.
+
+    #Find indexes
     right = col + 1
-    if right > W_index:
+    if right > WIDTH_MAX_INDEX:
         right = 0
 
-    #LEWY
     left = col - 1
     if left < 0:
-        left = W_index
+        left = WIDTH_MAX_INDEX
 
-    #GÓRNY
     up = row - 1
     if up < 0:
-        up = H_index
+        up = HEIGHT_MAX_INDEX
 
-    #DOLNY
     down = row + 1
-    if down > H_index:
+    if down > HEIGHT_MAX_INDEX:
         down = 0
 
-    #SPRAWDZENIE ILOŚCI
-    count = 0
-    '''     * X *
+    neighbors_alive = 0
+    ''' Checks neighborhood in this pattern:
+            * X *
             X * X
             * X *
     '''
     if cell_grid[row][left].state == True:
-        count += 1
+        neighbors_alive += 1
     if cell_grid[row][right].state == True:
-        count += 1
+        neighbors_alive += 1
     if cell_grid[up][col].state == True:
-        count += 1
+        neighbors_alive += 1
     if cell_grid[down][col].state == True:
-        count += 1
+        neighbors_alive += 1
 
-    '''     X * X
+    ''' Checks neighborhood in this pattern:
+            X * X
             * * *
             X * X
     '''
     if cell_grid[up][left].state == True:
-        count += 1
+        neighbors_alive += 1
     if cell_grid[up][right].state == True:
-        count += 1
+        neighbors_alive += 1
     if cell_grid[down][left].state == True:
-        count += 1
+        neighbors_alive += 1
     if cell_grid[down][right].state == True:
-        count += 1
+        neighbors_alive += 1
 
-    return count
+    return neighbors_alive
 
 def check_grid():
     for i in range(0, HEIGHT):
         for j in range(0, WIDTH):
-            neighbours = count_neighbours(i, j)
-            cell_grid[i][j].checkRules(neighbours)
+            neighbors = count_neighbors(i, j)
+            cell_grid[i][j].checkRules(neighbors)
 
 def next_step():
     for i in range(0, HEIGHT):
@@ -142,27 +126,43 @@ def onCanvasClick(event):
     row = int(event.x / 10)
     col = int(event.y / 10)
     cell_grid[col][row].alternateState()
-    print('Got canvas click', event.x, event.y, event.widget)
+    #print('Got canvas click', event.x, event.y, event.widget)
 
+def on_closing():
+    global is_running
+    is_running = False
+
+
+# Create UI elements
+okno = Tk()
+okno.title("John Conway's Game of Life")
+
+frame1 = Frame(okno)
+frame1.grid(row=0, column=0)
+frame2 = Frame(okno)
+frame2.grid(row=0,column=1)
+
+c = Canvas(frame1, width = WIDTH*CELL_SIZE, height=HEIGHT*CELL_SIZE)
+c.pack()
+
+btn_start = Button(frame2, text="START", width=8, bg = "green", fg = "white", command=start)
+btn_start.pack(pady = 5, padx = 5)
+btn_stop = Button(frame2, text="STOP", width=8, bg = "red", fg = "white", command=stop)
+btn_stop.pack(pady = 5, padx = 5)
+btn_reset = Button(frame2, text="RESET", width=8, bg = "brown", fg = "white", command=reset)
+btn_reset.pack(pady = 5, padx = 5)
+
+# Bind and set
+okno.protocol("WM_DELETE_WINDOW", on_closing)
 c.bind('<Button-1>', onCanvasClick)
-
 create_grid()
 
-'''
-for i in range(0, HEIGHT):
-    print( str(i) + ", " + str(len(cell_grid[i])) )
-
-'''
-#NEXT_STEP_TIME = time() + DELAY_IN_SECONDS
-while True:
+# Mainloop
+while is_running:
     okno.update()
-    '''
-    if NEXT_DRAW_TIME < time():
-        okno.update()
-        NEXT_DRAW_TIME += 0.1
-    '''
-    if (NEXT_STEP_TIME < time() ) and IS_ON:
+    if (next_step_time < time() ) and is_on:
         check_grid()
         next_step()
-        #c.update()
-        NEXT_STEP_TIME += DELAY_IN_SECONDS
+        next_step_time += DELAY_IN_SECONDS
+
+okno.destroy()
