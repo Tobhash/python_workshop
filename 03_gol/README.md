@@ -32,3 +32,15 @@ whisch means that ceiling wraps with the floor and right side wraphs with the le
 
 All cells on the plane can be in two states: alive or dead.
 You can alter thair state by simply clicking on them and by this You determine the initial state of the game.
+(Notice: I doesn't mean You cannot alter the cell's state during the simulation.)
+When simulation starts every next state of every cell is calculated by this rules:
+- If a cell is __alive__ and have __2 or 3__ living_ neighbours it __will live on__. Otherwise it will die due to underpopulation or overpopulation.
+- If a cell is __dead__ and have __exactly 3__ living neighbours it __becomes alive__ due to reproduction.
+
+A quick word about the neighborhood: Every cell have 8 neighbors(up, donw, lef, right and 4 corners)
+
+Knowing this You can start your adventure. Game on!
+
+## Tips
+There are some pattern categories like still lifes, oscilators and spaceships. I will give you a quick look but it is more fun if You figure that out on Your own.
+
