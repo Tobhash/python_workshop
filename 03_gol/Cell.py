@@ -3,7 +3,7 @@ class Cell():
     def __init__(self, canvas, row, col, cellSize,cellType):
         x = row*cellSize
         y = col*cellSize
-        self.square = canvas.create_rectangle(x, y, x+cellSize,y+cellSize, outline="white", fill="grey")
+        self.square = canvas.create_rectangle(x, y, x + cellSize, y + cellSize, outline="white", fill="grey")
         self.cellType = cellType
         self.canvas = canvas
         self.state = False
@@ -12,10 +12,10 @@ class Cell():
     def changeState(self, willLive):
         if willLive == True:
             self.state = True
-            self.canvas.itemconfig(self.square, fill = "orange")
+            self.canvas.itemconfig(self.square, fill="orange")
         else:
             self.state = False
-            self.canvas.itemconfig(self.square, fill = "grey")
+            self.canvas.itemconfig(self.square, fill="grey")
 
     def alternateState(self):
         if self.state == True:
