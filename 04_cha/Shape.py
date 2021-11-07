@@ -1,7 +1,7 @@
 import random
 from typing import Tuple
 
-class Shape:
+class _Shape:
 
 
 
