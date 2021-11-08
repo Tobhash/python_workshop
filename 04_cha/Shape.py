@@ -15,11 +15,19 @@ class _Shape:
         self.choosen_vertice = None
         self.vertices = []
 
+    def get_next_vertice(self) -> Tuple[float, float]:
+        """Return a random vertice: (x,y) . Raise Excepcion if there is no vertice added."""
+
+        if len(self.vertices) == 0:
+            raise Exception("List of vertices is empty.")
+        else:
+            self.last_vertice = self.choosen_vertice
+            self.choosen_vertice = random.choice(self.vertices)
+
+        return self.choosen_vertice
+
     def get_last_vertice(self) -> Tuple[float, float]:
         return self.last_vertice
-
-    def get_next_vertice(self) -> Tuple[float, float]:
-        pass
 
     def get_random_point_inside(self) -> Tuple[float,float]:
         pass
@@ -82,17 +90,17 @@ class Triangle(_Shape):
         point_x = self.vertices[0][0]
         return (point_x,point_y)
 
-    def get_next_vertice(self) -> Tuple[float,float]:
-        """Return a random vertice: (x,y) . Raise Excepcion if there is no vertice added."""
-
-        if len(self.vertices) == 0:
-            raise Exception("List of vertices is empty.")
-        else:
-            self.last_vertice = self.choosen_vertice
-            # self.vertice_pool = self.vertices - self.last_vertice
-            self.choosen_vertice = random.choice(self.vertices)
-
-        return self.choosen_vertice
+    # def get_next_vertice(self) -> Tuple[float,float]:
+    #     """Return a random vertice: (x,y) . Raise Excepcion if there is no vertice added."""
+    #
+    #     if len(self.vertices) == 0:
+    #         raise Exception("List of vertices is empty.")
+    #     else:
+    #         self.last_vertice = self.choosen_vertice
+    #         # self.vertice_pool = self.vertices - self.last_vertice
+    #         self.choosen_vertice = random.choice(self.vertices)
+    #
+    #     return self.choosen_vertice
 
 
 class Square(_Shape):
@@ -100,15 +108,67 @@ class Square(_Shape):
     def __init__(self, plane_size: Tuple[int, int, int, int]):
         super().__init__(plane_size)
 
+        square_width = self.plane_size[2] - self.plane_size[0]
+        square_height = self.plane_size[3] - self.plane_size[1]
+
+        square_side_length = square_width if square_width < square_height else square_height
+
+        #1st vertice(top left)
+        pad_y = (square_height - square_side_length) / 2
+        pad_x = (square_width - square_side_length) / 2
+        v1_x = self.plane_size[0] + pad_x
+        v1_y = self.plane_size[1] + pad_y
+        v1 = (v1_x, v1_y)
+
+        #2nd vertice(top right)
+        v2 = (v1[0] + square_side_length, v1[1])
+
+        #3rd vertice(bottom righ)
+        v3 = (v2[0], v2[1] + square_side_length)
+
+        #4th vertice(bottom left)
+        v4 = (v1[0], v3[1])
+
+        self.vertices.append(v1)
+        self.vertices.append(v2)
+        self.vertices.append(v3)
+        self.vertices.append(v4)
+
+        self.choosen_vertice = random.choice(self.vertices)
+        # used to randomly choice next vertices
+        self.indexes = [0, 1, 2, 3]
+
+
+    def get_random_point_inside(self) -> Tuple[float,float]:
+        # choice( v1_x + 1, v2_x - 1)
+        point_x = random.randint(int(self.vertices[0][0] + 1),
+                                 int(self.vertices[1][0] - 1)
+                                 )
+        # choice( v1_y + 1, v3_y - 1)
+        point_y = random.randint(int(self.vertices[0][1] + 1),
+                                 int(self.vertices[3][1] - 1)
+                                 )
+        return (point_x, point_y)
+
     def get_next_vertice(self) -> Tuple[float,float]:
         """Return a random vertice: (x,y) . Raise Excepcion if there is no vertice added."""
-
         if len(self.vertices) == 0:
             raise Exception("List of vertices is empty.")
         else:
+            # the current vertex cannot be chosen in the next iteration
+            # &
+            # the current vertex cannot be one place away(anti - clockwise) from the previously chosen vertex
             self.last_vertice = self.choosen_vertice
-            self.vertice_pool = self.vertices.remove(self.last_vertice)
-            self.choosen_vertice = random.choice(self.vertices)
+            restriction_index_1 = self.vertices.index(self.last_vertice)
+            restriction_index_2 = (restriction_index_1 - 1) % len(self.vertices)
+
+            self.indexes.remove(restriction_index_1)
+            self.indexes.remove(restriction_index_2)
+            self.choosen_vertice = self.vertices[random.choice(self.indexes)]
+            self.indexes = [0, 1, 2, 3]
+
+            # self.vertice_pool = self.vertices - [ self.vertices[restriction_index] ]
+            # self.choosen_vertice = random.choice(self.vertice_pool)
 
         return self.choosen_vertice
 

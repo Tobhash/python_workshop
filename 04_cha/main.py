@@ -1,11 +1,12 @@
 import tkinter
 from tkinter import *
 from random import randint,choice
-from Shape import Triangle
+from Shape import Triangle, Square
 
 CANVAS_HEIGHT = 1000
-CANVAS_WIDTH = 1000
-shape = Triangle(plane_size=(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
+CANVAS_WIDTH = 1400
+# shape = Triangle(plane_size=(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
+shape = Square(plane_size=(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT))
 step_counter = 0
 is_on = False
 is_running = True
