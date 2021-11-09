@@ -26,20 +26,22 @@ class _Shape:
 
         return self.choosen_vertice
 
+    def get_all_polygon_vertices(self) -> List[float]:
+        result =[]
+        if len(self.vertices) != 0:
+            for v in self.vertices:
+                result.append(int(v[0]))
+                result.append(int(v[1]))
+
+        return result
+
     def get_last_vertice(self) -> Tuple[float, float]:
         return self.last_vertice
 
     def get_random_point_inside(self) -> Tuple[float,float]:
         pass
 
-    def get_all_polygon_vertices(self) -> List[float]:
-        result =[]
-        if len(self.vertices) != 0:
-            for v in self.vertices:
-                result.append(v[0])
-                result.append(v[1])
 
-        return result
 
     # def add_vertice(self, pos_x: float, posy_y: float) -> None:
     #     """Add vertice if is within the plane. Otherwise raise an exception"""
@@ -171,6 +173,63 @@ class Square(_Shape):
             # self.choosen_vertice = random.choice(self.vertice_pool)
 
         return self.choosen_vertice
+
+
+class Pentagon(_Shape):
+    def __init__(self, plane_size: Tuple[int, int, int, int]):
+        super().__init__(plane_size)
+
+        plane_width = self.plane_size[2] - self.plane_size[0]
+        plane_height = self.plane_size[3] - self.plane_size[1]
+
+        radius = (plane_height if plane_height < plane_width else plane_width) / 2
+        center = (plane_width / 2, plane_height / 2)
+        side_lenght = 2 * (radius * math.cos(math.radians(54)))
+
+        # 1st vertex (top)
+        v1_x = center[0]
+        v1_y = center[1] - radius
+
+        # 2nd vertex (middle-right)
+        v2_x = v1_x + radius * math.cos(math.radians(36))
+        v2_y = v1_y + radius * math.sin(math.radians(36))
+
+        # 3rd vertex (bottom-right)
+        v3_x = v2_x - radius * math.sin(math.radians(18))
+        v3_y = v2_y + radius * math.cos(math.radians(18))
+
+        # 5th vertex (middle-left)
+        v5_x = v1_x - radius * math.cos(math.radians(36))
+        v5_y = v2_y
+
+        # 4th vertex (bottom-left)
+        v4_x = v5_x + radius * math.sin(math.radians(18))
+        v4_y = v3_y
+
+
+
+        self.vertices.append((v1_x, v1_y))
+        self.vertices.append((v2_x, v2_y))
+        self.vertices.append((v3_x, v3_y))
+        self.vertices.append((v4_x, v4_y))
+        self.vertices.append((v5_x, v5_y))
+
+        self.choosen_vertice = random.choice(self.vertices)
+        self.radius = radius
+        self.center = center
+
+    def get_random_point_inside(self) -> Tuple[float, float]:
+        inner_radius = self.radius * math.sin(math.radians(54))
+        angle = math.radians(random.randint(0, 180))
+        point_x = self.center[0] + inner_radius * math.cos(angle)
+        point_y = self.center[1] + inner_radius * math.sin(angle)
+
+        return point_x, point_y
+
+
+
+
+
 
 
 
