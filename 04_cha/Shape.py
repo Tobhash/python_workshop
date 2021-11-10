@@ -21,6 +21,10 @@ class _Shape:
         if len(self.vertices) == 0:
             raise Exception("List of vertices is empty.")
         else:
+            # =====
+            # Variant 0:
+            # choose random vertex
+            # =====
             self.last_vertice = self.choosen_vertice
             self.choosen_vertice = random.choice(self.vertices)
 
@@ -157,9 +161,12 @@ class Square(_Shape):
         if len(self.vertices) == 0:
             raise Exception("List of vertices is empty.")
         else:
+            # =====
+            # Variant 1:
             # the current vertex cannot be chosen in the next iteration
             # &
             # the current vertex cannot be one place away(anti - clockwise) from the previously chosen vertex
+            # =====
             self.last_vertice = self.choosen_vertice
             restriction_index_1 = self.vertices.index(self.last_vertice)
             restriction_index_2 = (restriction_index_1 - 1) % len(self.vertices)
@@ -182,29 +189,48 @@ class Pentagon(_Shape):
         plane_width = self.plane_size[2] - self.plane_size[0]
         plane_height = self.plane_size[3] - self.plane_size[1]
 
-        radius = (plane_height if plane_height < plane_width else plane_width) / 2
-        center = (plane_width / 2, plane_height / 2)
+        gamma = 0.5527864       # Pentagon HEIGHT to circle radius ratio
+        # radius = (plane_height if plane_height < plane_width else plane_width) / 2
+        H = (plane_height if plane_height < plane_width else plane_width)
+        radius = round(H * gamma, 2)
+
+        center = (plane_width / 2, radius)
         side_lenght = 2 * (radius * math.cos(math.radians(54)))
 
         # 1st vertex (top)
         v1_x = center[0]
         v1_y = center[1] - radius
 
+        v1_x = round(v1_x, 0)
+        v1_y = round(v1_y, 0)
+
         # 2nd vertex (middle-right)
-        v2_x = v1_x + radius * math.cos(math.radians(36))
-        v2_y = v1_y + radius * math.sin(math.radians(36))
+        v2_x = v1_x + side_lenght * math.cos(math.radians(36))
+        v2_y = v1_y + side_lenght * math.sin(math.radians(36))
+
+        v2_x = round(v2_x, 0)
+        v2_y = round(v2_y, 0)
 
         # 3rd vertex (bottom-right)
-        v3_x = v2_x - radius * math.sin(math.radians(18))
-        v3_y = v2_y + radius * math.cos(math.radians(18))
+        v3_x = v2_x - side_lenght * math.sin(math.radians(18))
+        v3_y = v2_y + side_lenght * math.cos(math.radians(18))
+
+        v3_x = round(v3_x, 0)
+        v3_y = round(v3_y, 0)
 
         # 5th vertex (middle-left)
-        v5_x = v1_x - radius * math.cos(math.radians(36))
+        v5_x = v1_x - side_lenght * math.cos(math.radians(36))
         v5_y = v2_y
 
+        v5_x = round(v5_x, 0)
+        v5_y = round(v5_y, 0)
+
         # 4th vertex (bottom-left)
-        v4_x = v5_x + radius * math.sin(math.radians(18))
+        v4_x = v5_x + side_lenght * math.sin(math.radians(18))
         v4_y = v3_y
+
+        v4_x = round(v4_x, 0)
+        v4_y = round(v4_y, 0)
 
 
 
@@ -217,6 +243,9 @@ class Pentagon(_Shape):
         self.choosen_vertice = random.choice(self.vertices)
         self.radius = radius
         self.center = center
+        self. indexes = [0, 1, 2, 3, 4]
+        self.last_index = 1
+        self.last_last_index = 0
 
     def get_random_point_inside(self) -> Tuple[float, float]:
         inner_radius = self.radius * math.sin(math.radians(54))
@@ -225,6 +254,52 @@ class Pentagon(_Shape):
         point_y = self.center[1] + inner_radius * math.sin(angle)
 
         return point_x, point_y
+
+    def get_next_vertice(self) -> Tuple[float, float]:
+        """Return a random vertice: (x,y) . Raise Excepcion if there is no vertice added."""
+        # super().get_next_vertice()
+
+
+        if len(self.vertices) == 0:
+            raise Exception("List of vertices is empty.")
+        else:
+            # =====
+            # Variant 1:
+            # the currently chosen vertex cannot neighbor the previously chosen vertex
+            # if the two previously chosen vertices are the same.
+            # =====
+
+            chosen_index = None
+            if self.last_last_index == self.last_index:
+                restricted_index1 = self.last_index
+                restricted_index2 = (restricted_index1 + 1) % len(self.indexes)
+                restricted_index3 = (restricted_index1 - 1) % len(self.indexes)
+
+                self.indexes.remove(restricted_index1)
+                self.indexes.remove(restricted_index2)
+                self.indexes.remove(restricted_index3)
+
+                chosen_index = random.choice(self.indexes)
+                self.indexes = [0, 1, 2, 3, 4]
+            else:
+                chosen_index = random.choice(self.indexes)
+
+            self.choosen_vertice = self.vertices[chosen_index]
+
+            self.last_last_index = self.last_index
+            self.last_index = chosen_index
+
+            # # ====
+            # # Variant 2
+            # # ====
+            #
+            # self.indexes.remove(self.last_index)
+            # index = random.choice(self.indexes)
+            # self.choosen_vertice = self.vertices[index]
+            # self.indexes = [0, 1, 2, 3, 4]
+            # self.last_index = index
+
+        return self.choosen_vertice
 
 
 
